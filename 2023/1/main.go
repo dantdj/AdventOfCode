@@ -8,11 +8,12 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
-	partOne() // Correct answer: 54338
-	partTwo() // Correct answer: 53389
+	measureTime(partOne) // Correct answer: 54338
+	measureTime(partTwo) // Correct answer: 53389
 }
 
 func partOne() {
@@ -37,13 +38,10 @@ func partOne() {
 		result += value
 	}
 
-	fmt.Printf("Part One: %d\n", result)
+	fmt.Printf("Part One: %d", result)
 }
 
 func partTwo() {
-	// Add additional context to the `extractNumbersFromString` method that stores the starting
-	// index of the digit / word. To handle getting words, simply do a substring check to find the index,
-	// and then add in the relevant digit and index combo if it's found
 	input, err := readInput("real-input")
 	if err != nil {
 		os.Exit(1)
@@ -65,7 +63,7 @@ func partTwo() {
 		result += value
 	}
 
-	fmt.Printf("Part two: %d\n", result)
+	fmt.Printf("Part Two: %d", result)
 }
 
 // Extracts only digits from the given string
@@ -147,7 +145,7 @@ func (ds DigitSlice) Less(i, j int) bool { return ds[i].Index < ds[j].Index }
 func readInput(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Fatalf("Failed to read file: %s", err)
+		log.Fatalf("failed to open file: %s", err)
 		return nil, err
 	}
 	defer file.Close()
@@ -159,4 +157,11 @@ func readInput(filename string) ([]string, error) {
 	}
 
 	return lines, scanner.Err()
+}
+
+func measureTime(f func()) {
+	startTime := time.Now()
+	f()
+	duration := time.Since(startTime)
+	fmt.Printf(" - %dµs\n", duration.Microseconds())
 }
