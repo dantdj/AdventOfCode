@@ -106,7 +106,7 @@ func readInput(filename string) ([]GameRecord, error) {
 				case "green":
 					round.GreenCubes = blockCount
 				default:
-					fmt.Printf("Couldn't match block: {")
+					fmt.Printf("Couldn't match block: %s", blockDetails[1])
 				}
 			}
 
