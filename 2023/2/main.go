@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	measureTime(partOne) // Correct answer: 2476
-	measureTime(partTwo) // Correct answer: 54911
+	measureTime(partOne)
+	measureTime(partTwo)
 }
 
 func partOne() {

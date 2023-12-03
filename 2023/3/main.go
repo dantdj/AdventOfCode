@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	measureTime(partOne) // Correct answer: 526404
+	measureTime(partOne)
 	measureTime(partTwo)
 }
 
@@ -29,7 +29,6 @@ func partOne() {
 			for _, point := range number.Points {
 				if checkForSymbolPartOne(input, point) {
 					foundSymbol = true
-					//time.Sleep(1*time.Second)
 					break
 				}
 			}
@@ -44,16 +43,11 @@ func partOne() {
 }
 
 func partTwo() {
-	// Do the same as part one, and find all the numbers and begin iterating through them. This time, store the location where the symbol was found
-	// Store the location of any '*' characters, and then see if _only_ two numbers have a symbol location that matches that location.
-	// This means I'll also need to persist the nubers for longer than just a row - I can maintain just a flat list of them outside though
-
 	input, _ := readInput("real-input")
 	numbersList := []Number{}
 	asterisks := []Symbol{}
 
 	for y, row := range input {
-		// Extract numbers and their indexes from the row
 		numbers := extractNumbersFromRow(row, y)
 
 		for _, number := range numbers {
@@ -67,15 +61,12 @@ func partTwo() {
 						asterisks = append(asterisks, symbol)
 					}
 
-					//time.Sleep(1*time.Second)
 					break
 				}
 			}
 		}
 	}
 
-	// For each number in the numbers list, check the other numbers and see if they have the same adjacent asterisk coord
-	// Add those numbers to another list - if the length of that list is 2, then find the gear ratio of that list
 	gearRatioSum := 0
 	for i := 0; i < len(numbersList); i++ {
 		firstCoord := numbersList[i].AdjacentAsteriskCoord
