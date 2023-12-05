@@ -92,10 +92,9 @@ func readInput(filename string) ([]ScratchCard, error) {
 
 	scratchcards := []ScratchCard{}
 	scanner := bufio.NewScanner(file)
+	findNumRegex := `\d+`
+	re := regexp.MustCompile(findNumRegex)
 	for scanner.Scan() {
-		findNumRegex := `\d+`
-		re := regexp.MustCompile(findNumRegex)
-
 		// Divide into card number and card state
 		cardSplit := strings.Split(scanner.Text(), ": ")
 
