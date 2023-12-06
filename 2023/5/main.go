@@ -26,10 +26,15 @@ func partOne() {
 		for _, mappings := range almanac.Mappings {
 
 			result := currentValue
+			// Quick explanation of this - the mappings don't overlap, so we can safely go through
+			// all of the mappings if we need to. As such, we go through all the mappings, and try and
+			// find one where the currentValue maps into a new value. If it doesn't at all, then we
+			// return the same number because nothing maps. If result is different from the current value,
+			// we know we mapped, so we can just break out
 			for _, mappingDetail := range mappings.MappingDetails {
 				if result != currentValue {
 					// Short-circuit - we mapped to a brand new value already
-					continue
+					break
 				}
 				result = calculateDestination(currentValue, mappingDetail)
 			}
@@ -50,25 +55,27 @@ func partTwo() {
 	almanac, _ := readInputPartTwo("real-input")
 	lowestLocation := math.MaxInt
 
-	for _, seed := range almanac.Seeds {
-		currentValue := seed
+	for _, pairing := range almanac.SeedPairings {
+		for i := pairing[0]; i < pairing[0] + pairing[1]; i++ {
+			currentValue := i
 
-		for _, mappings := range almanac.Mappings {
+			for _, mappings := range almanac.Mappings {
 
-			result := currentValue
-			for _, mappingDetail := range mappings.MappingDetails {
-				if result != currentValue {
-					// Short-circuit - we mapped to a brand new value already
-					continue
+				result := currentValue
+				for _, mappingDetail := range mappings.MappingDetails {
+					if result != currentValue {
+						// Short-circuit - we mapped to a brand new value already
+						break
+					}
+					result = calculateDestination(currentValue, mappingDetail)
 				}
-				result = calculateDestination(currentValue, mappingDetail)
+
+				currentValue = result
 			}
 
-			currentValue = result
-		}
-
-		if currentValue < lowestLocation {
-			lowestLocation = currentValue
+			if currentValue < lowestLocation {
+				lowestLocation = currentValue
+			}
 		}
 	}
 
@@ -134,18 +141,18 @@ func readInputPartOne(filename string) (Almanac, error) {
 	return almanac, err
 }
 
-func readInputPartTwo(filename string) (Almanac, error) {
+func readInputPartTwo(filename string) (Almanac2, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
-		return Almanac{}, err
+		return Almanac2{}, err
 	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	findNumRegex := `\d+`
 	re := regexp.MustCompile(findNumRegex)
-	almanac := Almanac{}
+	almanac := Almanac2{}
 	currentMapInput := [][]int{}
 	for scanner.Scan() {
 		// Parse seeds
@@ -157,9 +164,8 @@ func readInputPartTwo(filename string) (Almanac, error) {
 			for _, pairing := range seedRangePairings {
 				// pairing[0] is the start of the range, pairing[1] is the number of elements
 				fmt.Printf("Adding for initial count %d and range number %d\n", pairing[0], pairing[1])
-				for i := pairing[0]; i < pairing[0]+pairing[1]; i++ {
-					almanac.Seeds = append(almanac.Seeds, i)
-				}
+
+				almanac.SeedPairings = append(almanac.SeedPairings, pairing)
 			}
 			// Skip here - now that the seeds are taken care of, we know that
 			// the only other lines of numbers are map values
@@ -207,7 +213,7 @@ func getMappingDetails(input [][]int) []MappingDetail {
 	for _, rangeInfo := range input {
 		detail := MappingDetail{
 			// This is the difference between the destination start and the source start
-			SumToAdd:    diff(rangeInfo[0], rangeInfo[1]),
+			SumToAdd:    rangeInfo[0] - rangeInfo[1],
 			SourceStart: rangeInfo[1],
 			RangeLength: rangeInfo[2],
 		}
@@ -224,10 +230,6 @@ func calculateDestination(num int, detail MappingDetail) int {
 
 	// Number isn't in our map, so just return the number
 	return num
-}
-
-func diff(a, b int) int {
-	return a - b
 }
 
 func splitIntoPairs(nums []int) [][]int {
@@ -255,6 +257,12 @@ type Almanac struct {
 
 	Mappings       []Mapping
 	MappingDetails []MappingDetail
+}
+
+type Almanac2 struct {
+	SeedPairings [][]int
+
+	Mappings       []Mapping
 }
 
 type Mapping struct {
