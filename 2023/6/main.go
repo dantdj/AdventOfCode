@@ -24,19 +24,15 @@ func partOne() {
 	result := 1
 	
 	for _, race := range races {
-		distances := []int{}
 		winningDistances := 0
 		currentSpeed := 0
 		for i := 0; i < race.Duration; i++ {
 			// Append the distance travelled in the remainder of the time in the race
-			distances = append(distances, currentSpeed * (race.Duration - i))
-			currentSpeed++
-		}
-		
-		for _, distance := range distances {
+			distance := currentSpeed * (race.Duration - i)
 			if distance > race.RecordDistance {
 				winningDistances++
 			}
+			currentSpeed++
 		}
 		
 		result *= winningDistances
@@ -47,23 +43,18 @@ func partOne() {
 
 func partTwo() {
 	race, _ := readInputPartTwo("real-input")
-	
-	distances := []int{}
-	winningDistances := 0
+
 	currentSpeed := 0
+	result := 0
+
 	for i := 0; i < race.Duration; i++ {
 		// Append the distance travelled in the remainder of the time in the race
-		distances = append(distances, currentSpeed * (race.Duration - i))
+		distance := currentSpeed * (race.Duration - i)
+		if distance > race.RecordDistance {
+			result++
+		}
 		currentSpeed++
 	}
-
-	for _, distance := range distances {
-		if distance > race.RecordDistance {
-			winningDistances++
-		}
-	}
-
-	result := winningDistances
 	
 	fmt.Printf("Part Two: %d", result)
 }
