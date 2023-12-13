@@ -67,7 +67,92 @@ func partOne() {
 }
 
 func partTwo() {
+	// In the queue for BFS, store a _pointer_ to the node. Then we can very easily mark it as discovered
+	input, _ := readInput("test-input2")
 
+	startPoint := findStartPoint(input)
+
+	// Find the surrounding pipes, as we don't know the shape of the beginning pipe
+	// They become the beginning of the left and right paths
+	pathStarts := []*Node{}
+
+	if len(input) > startPoint.Y + 1 && startPoint.Y-1 >= 0 {
+		if _, found := getNextNode(input[startPoint.Y-1][startPoint.X], input); found {
+			pathStarts = append(pathStarts, &input[startPoint.Y-1][startPoint.X])
+		}
+		if _, found := getNextNode(input[startPoint.Y+1][startPoint.X], input); found {
+			pathStarts = append(pathStarts, &input[startPoint.Y+1][startPoint.X])
+		}
+	}
+
+	if len(input[0]) > startPoint.X + 1 && startPoint.X-1 >= 0 {
+		if _, found := getNextNode(input[startPoint.Y][startPoint.X-1], input); found {
+			pathStarts = append(pathStarts, &input[startPoint.Y][startPoint.X-1])
+		}
+		if _, found := getNextNode(input[startPoint.Y][startPoint.X+1], input); found {
+			pathStarts = append(pathStarts, &input[startPoint.Y][startPoint.X+1])
+		}
+	}
+
+	input[startPoint.Y][startPoint.X].Discovered = true
+	pathStarts[0].Discovered = true
+	pathStarts[1].Discovered = true
+
+	queue := make([]*Node, 0)
+	queue = append(queue, pathStarts[0], pathStarts[1])
+	// This will mark all of the required things as discovered
+	for len(queue) > 0 {
+		current := queue[0]
+		current.Discovered = true
+
+		next, found := getNextNode(*current, input)
+		if found {
+			queue = append(queue, next)
+		}
+
+		// Remove the element we just processed
+		queue = queue[1:]
+	}
+
+	// Hard-coded replacement for my input - this isn't great,
+	// but I want to solve first
+	input[startPoint.Y][startPoint.X].Value = "F"
+
+	print2DArray(input)
+
+	spotsInShape := 0
+	for y, row := range input {
+		for x, _ := range row {
+			// Cast a ray to the right (i.e check the rest of the row)
+			// If number of | is even, we're outside the shape
+			// If number of | is odd, we're outisde the shape
+			numberOfPipes := 0
+			for i := x; i < len(row); i++ {
+				node := input[y][i]
+				if node.Discovered {
+					if isBadWallCharacter(node.Value) {
+						// If it's seeing a wall that's not the |, it can't
+						// be in the shape
+						continue
+					}
+
+					if node.Value == "|" {
+						numberOfPipes++
+					}
+				}
+			}
+			// Only count a tile if it has an odd number of pipes
+			if numberOfPipes % 2 != 0 {
+				spotsInShape++
+			}
+		}
+	}
+
+	fmt.Printf("Part 2: %d", spotsInShape)
+}
+
+func isBadWallCharacter(value string) bool {
+	return value == "-"
 }
 
 // Finds the next node to go to based on the current pipe
@@ -190,4 +275,13 @@ func measureTime(f func()) {
 	f()
 	duration := time.Since(startTime)
 	fmt.Printf(" - %dµs\n", duration.Microseconds())
+}
+
+func print2DArray(arr [][]Node) {
+	for i := 0; i < len(arr); i++ {
+		for j := 0; j < len(arr[i]); j++ {
+			fmt.Printf("%s ", arr[i][j].Value)
+		}
+		fmt.Println() // Move to the next line after printing each row
+	}
 }

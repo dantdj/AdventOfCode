@@ -85,7 +85,7 @@ func partTwo() {
 	fmt.Printf("Part 2: %d", total)
 }
 
-func expandUniverse(universe [][]Node) [][]Node {
+func expandUniverse1(universe [][]Node) [][]Node {
 	indexesToAddColumnsAt := []int{}
 	indexesToAddRowsAt := []int{}
 	
@@ -165,24 +165,6 @@ func expandUniverse2(universe [][]Node) [][]Node {
 			}
 		}
 	}
-	
-	
-	extraRowsOrColumns := 1000
-	for i, index := range indexesToAddRowsAt {
-		// +i*offset because we've created that number of extra rows compared to our discovery
-		// i*offset is how many extra rows we've already created
-		for j:= 0; j < extraRowsOrColumns; j++ {
-			universe = insertEmptyRow(universe, index+(i*extraRowsOrColumns)+i)
-		}
-	}
-
-	for i, index := range indexesToAddColumnsAt {
-		// +i*offset because we've created that number of extra columns compared to our discovery
-		// Our original indexes were based on the beginning grid, so we need to increase them to take that into account
-		for j := 0; j < extraRowsOrColumns; j++ {
-			universe = insertEmptyColumn(universe, index+(i*extraRowsOrColumns)+i)
-		}
-	}
 
 	return universe
 }
@@ -230,6 +212,13 @@ func insertEmptyRow(matrix [][]Node, rowIndex int) [][]Node {
 // Gets the Manhattan Distance between two points in the provided 2D array
 func getDistanceBetweenTwoPoints(point1, point2 Point) int {
 	return int(math.Abs(float64(point1.X) - float64(point2.X)) + math.Abs(float64(point1.Y) - float64(point2.Y)))
+}
+
+type Universe struct {
+	Map [][]Node
+	ExpansionFactor int
+	ExpansionRowIndexes int
+	ExpansionColumnIndexes int
 }
 
 type Node struct {
