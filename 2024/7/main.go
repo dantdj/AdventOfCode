@@ -109,52 +109,6 @@ func calculatePartTwo(ans, first, second int, rest ...int) int {
 	return 0
 }
 
-func partTwoOld() int {
-	equations := readInput("test-input.txt")
-
-	total := 0
-
-	for _, equation := range equations {
-		ans := calculate(equation.CorrectAnswer, equation.Operands[0], equation.Operands[1], equation.Operands[2:]...)
-		validSum := ans == equation.CorrectAnswer
-
-		// If the standard setup wasn't valid, build concatenated subequations
-		if !validSum {
-			// build list of pre-concatenated equations
-			subEquations := []Equation{}
-			// for each operand, we want a subequation where it's been paired to the one in front
-			for i := 0; i < len(equation.Operands); i++ {
-				subEquation := Equation{}
-				// The answer for the sub equation will be the same as the parent
-				subEquation.CorrectAnswer = equation.CorrectAnswer
-
-				//subEquation.Operands = append(subEquation.Operands, equation.Operands[0:i])
-
-				subEquations = append(subEquations, subEquation)
-			}
-
-			// check each concatenated subequation - if any are valid, so's our parent
-			for _, subEquation := range subEquations {
-				// if we actually have a valid number of operands
-				if len(subEquation.Operands) > 1 {
-					ans := calculate(equation.CorrectAnswer, equation.Operands[0], equation.Operands[1], equation.Operands[2:]...)
-
-					if ans == subEquation.CorrectAnswer {
-						validSum = true
-						// stop, no reason to go further as we know it's valid
-						break
-					}
-				}
-			}
-		}
-
-		if validSum {
-			total += equation.CorrectAnswer
-		}
-	}
-	return total
-}
-
 func readInput(filename string) []Equation {
 	file, err := os.Open(filename)
 	if err != nil {
