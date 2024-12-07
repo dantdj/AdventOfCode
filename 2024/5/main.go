@@ -99,7 +99,6 @@ func partTwo() int {
 func addUniqueRule(rules []PageOrderingRule, rule PageOrderingRule) []PageOrderingRule {
 	for _, p := range rules {
 		if p == rule {
-			// nothing to do, this rule already exists
 			return rules
 		}
 	}
@@ -112,10 +111,10 @@ func getMiddleElement(slice []int) int {
 }
 
 func areSlicesEqual(slice1, slice2 []int) bool {
-	if len(slice1) != len(slice2) { //if condition is not satisfied print false
+	if len(slice1) != len(slice2) {
 		return false
 	}
-	for i, element := range slice1 { // use for loop to check equality
+	for i, element := range slice1 {
 		if element != slice2[i] {
 			return false
 		}
