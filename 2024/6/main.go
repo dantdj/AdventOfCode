@@ -37,19 +37,6 @@ func partOne() int {
 		}
 	}
 
-	// for row := 0; row < 10; row++ {
-	// 	for column := 0; column < 10; column++ {
-	// 		if grid[row][column].IsObstacle {
-	// 			fmt.Print("#", " ")
-	// 		} else if grid[row][column].Visited {
-	// 			fmt.Print("X", " ")
-	// 		} else {
-	// 			fmt.Print(".", " ")
-	// 		}
-	// 	}
-	// 	fmt.Print("\n")
-	// }
-
 	return visitedCount
 }
 
@@ -91,26 +78,12 @@ func partTwo() int {
 		}
 	}
 
-	// for row := 0; row < 10; row++ {
-	// 	for column := 0; column < 10; column++ {
-	// 		if grid[row][column].IsObstacle {
-	// 			fmt.Print("#", " ")
-	// 		} else if grid[row][column].Visited {
-	// 			fmt.Print("X", " ")
-	// 		} else {
-	// 			fmt.Print(".", " ")
-	// 		}
-	// 	}
-	// 	fmt.Print("\n")
-	// }
-
 	return numOfLoops
 }
 
 // runs a round and returns if a loop was present for that round
 func runRound(grid [][]Point, xIdx, yIdx int, startPoint Point) bool {
 	newGrid := getGridWithObstacle(grid, xIdx, yIdx)
-	fmt.Printf("Running for X: %d, Y: %d\n", xIdx, yIdx)
 	loopFound := false
 	outOfBounds := false
 	currentPoint := startPoint
