@@ -124,6 +124,7 @@ func runRound(grid [][]Point, xIdx, yIdx int, startPoint Point) bool {
 		Facing: currentFacing,
 	})
 	for {
+		// If we hit 50000, we've almost certainly got a cycle
 		for i := 1; i <= 50000; i++ {
 			if !withinBounds(len(newGrid[0]), len(newGrid), currentPoint.X, currentPoint.Y) {
 				// If above is true, then we're off the grid,
@@ -133,9 +134,19 @@ func runRound(grid [][]Point, xIdx, yIdx int, startPoint Point) bool {
 			}
 			newX, newY := getNextLocation(currentFacing, currentPoint.X, currentPoint.Y)
 
+			// Handle potentially 3 corners
+			// I should make this an actual nice function but I'm short on time
 			if newGrid[newY][newX].IsObstacle {
 				currentFacing = getNextFacing(currentFacing)
 				newX, newY = getNextLocation(currentFacing, currentPoint.X, currentPoint.Y)
+				if newGrid[newY][newX].IsObstacle {
+					currentFacing = getNextFacing(currentFacing)
+					newX, newY = getNextLocation(currentFacing, currentPoint.X, currentPoint.Y)
+					if newGrid[newY][newX].IsObstacle {
+						currentFacing = getNextFacing(currentFacing)
+						newX, newY = getNextLocation(currentFacing, currentPoint.X, currentPoint.Y)
+					}
+				}
 			}
 
 			currentPoint = Point{X: newX, Y: newY}
