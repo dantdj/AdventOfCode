@@ -1,0 +1,1 @@
+All of this is cursed code that was born from me being in a hurry, don't read too much into it.
