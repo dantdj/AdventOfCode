@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -14,6 +16,7 @@ func main() {
 }
 
 func partOne() int {
+	defer timeTrack(time.Now(), "partOne")
 	equations := readInput("real-input.txt")
 
 	total := 0
@@ -59,6 +62,7 @@ func calculate(ans, first, second int, rest ...int) int {
 }
 
 func partTwo() int {
+	defer timeTrack(time.Now(), "partTwo")
 	equations := readInput("real-input.txt")
 
 	total := 0
@@ -144,17 +148,29 @@ func readInput(filename string) []Equation {
 
 // given e.g 12 and 34, combines into 1234
 func concatenateInts(first, second int) int {
-	str1 := strconv.Itoa(first)
-	str2 := strconv.Itoa(second)
+	// str1 := strconv.Itoa(first)
+	// str2 := strconv.Itoa(second)
 
-	combined := str1 + str2
+	// combined := str1 + str2
 
-	combinedInt, _ := strconv.Atoi(combined)
+	// combinedInt, _ := strconv.Atoi(combined)
 
-	return combinedInt
+	// return combinedInt
+
+	// Trying out a pure math solution that I found
+	// for the fun of it, takes part two runtime from
+	// ~425ms to ~170ms!
+	numDigits := int(math.Log10(float64(second))) + 1
+
+	return first*int(math.Pow(10, float64(numDigits))) + second
 }
 
 type Equation struct {
 	CorrectAnswer int
 	Operands      []int
+}
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	fmt.Printf("%s took %s\n", name, elapsed)
 }
