@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -14,6 +16,7 @@ func main() {
 }
 
 func partOne() int {
+	defer timeTrack(time.Now(), "partOne")
 	equations := readInput("real-input.txt")
 
 	total := 0
@@ -59,6 +62,7 @@ func calculate(ans, first, second int, rest ...int) int {
 }
 
 func partTwo() int {
+	defer timeTrack(time.Now(), "partTwo")
 	equations := readInput("real-input.txt")
 
 	total := 0
@@ -109,52 +113,6 @@ func calculatePartTwo(ans, first, second int, rest ...int) int {
 	return 0
 }
 
-func partTwoOld() int {
-	equations := readInput("test-input.txt")
-
-	total := 0
-
-	for _, equation := range equations {
-		ans := calculate(equation.CorrectAnswer, equation.Operands[0], equation.Operands[1], equation.Operands[2:]...)
-		validSum := ans == equation.CorrectAnswer
-
-		// If the standard setup wasn't valid, build concatenated subequations
-		if !validSum {
-			// build list of pre-concatenated equations
-			subEquations := []Equation{}
-			// for each operand, we want a subequation where it's been paired to the one in front
-			for i := 0; i < len(equation.Operands); i++ {
-				subEquation := Equation{}
-				// The answer for the sub equation will be the same as the parent
-				subEquation.CorrectAnswer = equation.CorrectAnswer
-
-				//subEquation.Operands = append(subEquation.Operands, equation.Operands[0:i])
-
-				subEquations = append(subEquations, subEquation)
-			}
-
-			// check each concatenated subequation - if any are valid, so's our parent
-			for _, subEquation := range subEquations {
-				// if we actually have a valid number of operands
-				if len(subEquation.Operands) > 1 {
-					ans := calculate(equation.CorrectAnswer, equation.Operands[0], equation.Operands[1], equation.Operands[2:]...)
-
-					if ans == subEquation.CorrectAnswer {
-						validSum = true
-						// stop, no reason to go further as we know it's valid
-						break
-					}
-				}
-			}
-		}
-
-		if validSum {
-			total += equation.CorrectAnswer
-		}
-	}
-	return total
-}
-
 func readInput(filename string) []Equation {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -190,17 +148,29 @@ func readInput(filename string) []Equation {
 
 // given e.g 12 and 34, combines into 1234
 func concatenateInts(first, second int) int {
-	str1 := strconv.Itoa(first)
-	str2 := strconv.Itoa(second)
+	// str1 := strconv.Itoa(first)
+	// str2 := strconv.Itoa(second)
 
-	combined := str1 + str2
+	// combined := str1 + str2
 
-	combinedInt, _ := strconv.Atoi(combined)
+	// combinedInt, _ := strconv.Atoi(combined)
 
-	return combinedInt
+	// return combinedInt
+
+	// Trying out a pure math solution that I found
+	// for the fun of it, takes part two runtime from
+	// ~425ms to ~170ms!
+	numDigits := int(math.Log10(float64(second))) + 1
+
+	return first*int(math.Pow(10, float64(numDigits))) + second
 }
 
 type Equation struct {
 	CorrectAnswer int
 	Operands      []int
+}
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	fmt.Printf("%s took %s\n", name, elapsed)
 }
